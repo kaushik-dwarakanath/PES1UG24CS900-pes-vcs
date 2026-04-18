@@ -91,6 +91,14 @@ int object_exists(const ObjectID *id) {
 //   - rename             : atomically moving the temp file to the final path
 //
 
+static const char *type_str(ObjectType type) {
+    if (type == OBJ_BLOB)   return "blob";
+    if (type == OBJ_TREE)   return "tree";
+    if (type == OBJ_COMMIT) return "commit";
+    return "blob";
+}
+
+
 //
 // Returns 0 on success, -1 on error.
 int object_write(ObjectType type, const void *data, size_t len, ObjectID *id_out) {
