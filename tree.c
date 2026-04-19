@@ -10,6 +10,7 @@
 //   "100644 hello.txt\0" followed by 32 raw bytes of SHA-256
 
 #include "tree.h"
+#include "index.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -136,6 +137,12 @@ int object_write(ObjectType type, const void *data, size_t len, ObjectID *id_out
 int tree_from_index(ObjectID *id_out) {
     // TODO: Implement recursive tree building
     // (See Lab Appendix for logical steps)
+
+    // load stages files from .pes/index
+    Index index;
+    if (index_load(&index) != 0)
+        return -1;
+
     (void)id_out;
     return -1;
 }
