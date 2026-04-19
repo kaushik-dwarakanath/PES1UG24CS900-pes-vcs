@@ -134,6 +134,33 @@ int tree_serialize(const Tree *tree, void **data_out, size_t *len_out) {
 // Forward declaration of helper function to be used
 int object_write(ObjectType type, const void *data, size_t len, ObjectID *id_out);
 
+
+// Recursively build a tree from a slice of index entries that share a prefix.
+static int write_tree_recursive(IndexEntry *entries, int count, int prefix_len, ObjectID *id_out) {
+    Tree tree;
+    tree.count = 0;
+
+    int i = 0;
+    while (i < count) {
+        const char *rel = entries[i].path + prefix_len; // how many characters of the path to skip to get name relative to this dir
+        char *slash = strchr(rel, '/');
+
+        if (!slash) {
+            TreeEntry *te = &tree.entries[tree.count++];
+            te->mode = entries[i].mode;
+            te->hash = entries[i].hash;
+            strncpy(te->name, rel, sizeof(te->name) - 1);
+            te->name[sizeof(te->name) - 1] = '\0';
+            i++;
+        } else {
+            // Complete this
+            i++;
+        }
+    }
+
+    // serialise and write tree obj pending
+}
+
 int tree_from_index(ObjectID *id_out) {
     // TODO: Implement recursive tree building
     // (See Lab Appendix for logical steps)
@@ -143,6 +170,5 @@ int tree_from_index(ObjectID *id_out) {
     if (index_load(&index) != 0)
         return -1;
 
-    (void)id_out;
-    return -1;
+    return write_tree_recursive(index.entries, index.count, 0, id_out);
 }
