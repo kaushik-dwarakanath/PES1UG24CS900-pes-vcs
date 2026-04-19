@@ -218,7 +218,13 @@ int commit_create(const char *message, ObjectID *commit_id_out) {
     snprintf(c.message, sizeof(c.message), "%s", message);
     c.timestamp = (uint64_t)time(NULL);
 
-    
+    // serialize and write commit object
+    void *cdata; size_t clen;
+    if (commit_serialize(&c, &cdata, &clen) != 0) return -1;
+    int rc = object_write(OBJ_COMMIT, cdata, clen, commit_id_out);
+    free(cdata);
+
+
     (void)message; (void)commit_id_out;
     return -1;
 }
