@@ -1,5 +1,6 @@
 # Compiled binaries
 pes
+pes_debug
 test_objects
 test_tree
 
@@ -17,4 +18,5 @@ test_tree
 .vscode/
 .idea/
 
-
+# Leftover test files
+*.txt
