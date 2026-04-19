@@ -244,6 +244,25 @@ int index_add(Index *index, const char *path) {
     free(buf);
 
 
-    (void)index; (void)path;
-    return -1;
+    // Get file metadata
+    struct stat st;
+    if (lstat(path, &st) != 0) return -1;
+
+    uint32_t mode = (st.st_mode & S_IXUSR) ? 0100755 : 0100644;
+
+    // Update or add index entry
+    IndexEntry *existing = index_find(index, path);
+    if (!existing) {
+        if (index->count >= MAX_INDEX_ENTRIES) return -1;
+        existing = &index->entries[index->count++];
+    }
+
+    existing->mode = mode;
+    existing->hash = blob_id;
+    existing->mtime_sec = (uint64_t)st.st_mtime;
+    existing->size = (uint32_t)st.st_size;
+    strncpy(existing->path, path, sizeof(existing->path) - 1);
+    existing->path[sizeof(existing->path) - 1] = '\0';
+
+    return index_save(index);
 }
