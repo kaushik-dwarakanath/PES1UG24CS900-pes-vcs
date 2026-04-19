@@ -158,7 +158,11 @@ static int write_tree_recursive(IndexEntry *entries, int count, int prefix_len, 
         }
     }
 
-    // serialise and write tree obj pending
+    void *tdata; size_t tlen;
+    if (tree_serialize(&tree, &tdata, &tlen) != 0) return -1;
+    int rc = object_write(OBJ_TREE, tdata, tlen, id_out);
+    free(tdata);
+    return rc;
 }
 
 int tree_from_index(ObjectID *id_out) {
