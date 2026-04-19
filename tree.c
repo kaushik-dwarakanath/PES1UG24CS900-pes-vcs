@@ -134,6 +134,11 @@ int tree_serialize(const Tree *tree, void **data_out, size_t *len_out) {
 // Forward declaration of helper function to be used
 int object_write(ObjectType type, const void *data, size_t len, ObjectID *id_out);
 
+__attribute__((weak))
+int index_load(Index *index) {
+    index->count = 0;
+    return 0;
+}
 
 // Recursively build a tree from a slice of index entries that share a prefix.
 static int write_tree_recursive(IndexEntry *entries, int count, int prefix_len, ObjectID *id_out) {
@@ -152,7 +157,9 @@ static int write_tree_recursive(IndexEntry *entries, int count, int prefix_len, 
             strncpy(te->name, rel, sizeof(te->name) - 1);
             te->name[sizeof(te->name) - 1] = '\0';
             i++;
-        } else {
+        }
+        
+        else {
             int dir_name_len = (int)(slash - rel);
             char dir_name[256];
             strncpy(dir_name, rel, dir_name_len);
