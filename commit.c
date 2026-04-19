@@ -223,8 +223,9 @@ int commit_create(const char *message, ObjectID *commit_id_out) {
     if (commit_serialize(&c, &cdata, &clen) != 0) return -1;
     int rc = object_write(OBJ_COMMIT, cdata, clen, commit_id_out);
     free(cdata);
+    if (rc != 0)
+        return -1;
 
-
-    (void)message; (void)commit_id_out;
-    return -1;
+    // update HEAD/branch ref to point to new commit
+    return head_update(commit_id_out);
 }
