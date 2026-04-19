@@ -92,9 +92,12 @@ int object_exists(const ObjectID *id) {
 //
 
 static const char *type_str(ObjectType type) {
-    if (type == OBJ_BLOB)   return "blob";
-    if (type == OBJ_TREE)   return "tree";
-    if (type == OBJ_COMMIT) return "commit";
+    if (type == OBJ_BLOB)
+        return "blob";
+    if (type == OBJ_TREE)
+        return "tree";
+    if (type == OBJ_COMMIT)
+        return "commit";
     return "blob";
 }
 
@@ -104,6 +107,19 @@ static const char *type_str(ObjectType type) {
 int object_write(ObjectType type, const void *data, size_t len, ObjectID *id_out) {
     // TODO: Implement
     (void)type; (void)data; (void)len; (void)id_out;
+    char header[64];
+    int header_len = snprintf(header, sizeof(header), "%s %zu", type_str(type), len) + 1;
+    
+    size_t total = (size_t)header_len + len;
+    uint8_t *obj = malloc(total);
+    if (!obj) return -1;
+    memcpy(obj, header, header_len);
+    memcpy(obj + header_len, data, len);
+ 
+
+    compute_hash(obj, total, id_out);
+    free(obj);
+
     return -1;
 }
 
